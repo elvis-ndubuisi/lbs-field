@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = import.meta.env.PROD
-  ? "https://africanproverbs.onrender.com/"
+  ? "https://lbs-field.onrender.com/"
   : "http://localhost:8080/api/";
 
 const http = axios.create({
