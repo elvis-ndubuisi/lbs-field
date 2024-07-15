@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Book {
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  author          String
+  isbn            String
+  createdAt       DateTime @default(now())
+  lastModified    DateTime @updatedAt
+  publicationDate DateTime
+  copies          Int
+  genre           Genre       @relation(fields: [genreId], references: [id])
+  genreId         String      @db.ObjectId
+  Collection      Collection? @relation(fields: [collectionId], references: [id])
+  collectionId    String?     @db.ObjectId
+
+  @@map("books")
+}
+
+model Genre {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  title String @unique
+  Book  Book[]
+
+  @@map("genre")
+}
+
+model Collection {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name  String
+  books Book[]
+
+  @@map("collections")
+}
+
+model User {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String @unique()
+  password String
+  role     Role   @default(member)
+
+  @@map("users")
+}
+
+enum Role {
+  liberian
+  member
+  administrator
+}
