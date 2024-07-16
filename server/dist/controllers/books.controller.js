@@ -132,6 +132,74 @@ function remove(req, res) {
         }
     });
 }
+/** Only access by the member role to borrowed books */
+function borrow(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a;
+        const user = (_a = res.locals) === null || _a === void 0 ? void 0 : _a.user;
+        const params = req.params;
+        try {
+            const alreadyRequested = yield prisma_1.default.borrowHistory.findFirst({
+                where: { borrowedBy: user.id, approved: false, bookBorrowed: params.id },
+            });
+            if (alreadyRequested) {
+                return res
+                    .status(200)
+                    .json({ message: "Already requested. Please wait" });
+            }
+            yield prisma_1.default.borrowHistory.create({
+                data: {
+                    bookBorrowed: params.id,
+                    borrowedBy: user.id,
+                },
+            });
+            return res.status(201).json({ message: "Request sent" });
+        }
+        catch (error) {
+            return res
+                .status(500)
+                .json({ message: "Unable to process request.", name: "", data: {} });
+        }
+    });
+}
+function getBorrowed(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a;
+        const user = (_a = res.locals) === null || _a === void 0 ? void 0 : _a.user;
+        try {
+            const borrowed = yield prisma_1.default.borrowHistory.findMany({
+                where: { borrowedBy: user.id, approved: true },
+            });
+            return res.json(borrowed);
+        }
+        catch (error) {
+            return res
+                .status(500)
+                .json({ message: "Unable to process request.", name: "", data: {} });
+        }
+    });
+}
+/**
+ * Accessed by liberian and member role.
+ * @returns all borrowed books if role is member or
+ * all borrowed books for a particular user (member)
+ */
+function ddddd(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a;
+        const params = req.params;
+        const user = (_a = res.locals) === null || _a === void 0 ? void 0 : _a.user;
+        try {
+            // await prisma.book.delete({ where: { id: params.id } });
+            // return res.sendStatus(201);
+        }
+        catch (error) {
+            return res
+                .status(500)
+                .json({ message: "Unable to process request.", name: "", data: {} });
+        }
+    });
+}
 exports.default = {
     addGenre,
     getGenre,
@@ -140,4 +208,6 @@ exports.default = {
     update,
     remove,
     getOne,
+    getBorrowed,
+    borrow,
 };
