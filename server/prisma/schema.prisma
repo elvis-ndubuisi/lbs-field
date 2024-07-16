@@ -8,18 +8,19 @@ datasource db {
 }
 
 model Book {
-  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
   title           String
   author          String
   isbn            String
-  createdAt       DateTime @default(now())
-  lastModified    DateTime @updatedAt
+  createdAt       DateTime        @default(now())
+  lastModified    DateTime        @updatedAt
   publicationDate DateTime
   copies          Int
-  genre           Genre       @relation(fields: [genreId], references: [id])
-  genreId         String      @db.ObjectId
-  Collection      Collection? @relation(fields: [collectionId], references: [id])
-  collectionId    String?     @db.ObjectId
+  genre           Genre           @relation(fields: [genreId], references: [id])
+  genreId         String          @db.ObjectId
+  Collection      Collection?     @relation(fields: [collectionId], references: [id])
+  collectionId    String?         @db.ObjectId
+  BorrowHistory   BorrowHistory[]
 
   @@map("books")
 }
@@ -32,6 +33,19 @@ model Genre {
   @@map("genre")
 }
 
+model BorrowHistory {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt    DateTime @default(now())
+  lastModified DateTime @updatedAt
+  BorrowedBy   User     @relation(fields: [borrowedBy], references: [id])
+  BookBorrowed Book     @relation(fields: [bookBorrowed], references: [id])
+  borrowedBy       String   @db.ObjectId
+  bookBorrowed       String   @db.ObjectId
+  approved     Boolean  @default(false)
+
+  @@map("borrowHistories")
+}
+
 model Collection {
   id    String @id @default(auto()) @map("_id") @db.ObjectId
   name  String
@@ -41,10 +55,11 @@ model Collection {
 }
 
 model User {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  name     String @unique()
-  password String
-  role     Role   @default(member)
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  name          String          @unique()
+  password      String
+  role          Role            @default(member)
+  BorrowHistory BorrowHistory[]
 
   @@map("users")
 }
