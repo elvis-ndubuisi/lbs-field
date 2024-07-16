@@ -15,13 +15,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: "https://lbs-field.vercel.app",
+    origin: ["http://localhost:5173", "https://lbs-field.vercel.app"],
     credentials: true,
-    // allowedHeaders: [
-    //   "Access-Control-Allow-Origin",
-    //   "Content-Type",
-    //   "Authorization",
-    // ],
+    allowedHeaders: [
+      "Access-Control-Allow-Origin",
+      "Content-Type",
+      "Authorization",
+    ],
   })
 );
 app.use(cookieParser());
