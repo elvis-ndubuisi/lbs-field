@@ -17,11 +17,11 @@ app.use(
   cors({
     origin: "https://lbs-field.vercel.app",
     credentials: true,
-    allowedHeaders: [
-      "Access-Control-Allow-Origin",
-      "Content-Type",
-      "Authorization",
-    ],
+    // allowedHeaders: [
+    //   "Access-Control-Allow-Origin",
+    //   "Content-Type",
+    //   "Authorization",
+    // ],
   })
 );
 app.use(cookieParser());
