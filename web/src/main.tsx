@@ -14,14 +14,14 @@ import LiberianIndex from "./pages/liberian-index.tsx";
 import AddBook from "./pages/add-book.tsx";
 import EditBook from "./pages/edit-book.tsx";
 import ViewBooks from "./pages/view-books.tsx";
+import UserIndex from "./pages/user-index.tsx";
 
 const router = createBrowserRouter([
-  { path: "/auth", element: <App /> },
   {
     path: "/",
     element: <Protector />,
     children: [
-      { path: "", element: <NoRole /> },
+      { index: true, element: <UserIndex /> },
       {
         path: "member",
         element: <ProtectRole role="member" />,
@@ -52,8 +52,10 @@ const router = createBrowserRouter([
           { path: ":id", element: <EditBook /> },
         ],
       },
+      { path: "/no-role", element: <NoRole /> },
     ],
   },
+  { path: "/auth", element: <App /> },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -62,5 +64,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <RouterProvider router={router} />
     </AuthProvider>
     {/* <App /> */}
-  </React.StrictMode>
+  </React.StrictMode>,
 );

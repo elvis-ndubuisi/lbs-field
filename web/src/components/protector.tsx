@@ -42,6 +42,7 @@ export default function Protector() {
           }}
         >
           <h2>{user?.name}</h2>
+          <span style={{ fontWeight: "bold" }}>As:{user?.role}</span>
           <button
             onClick={async () => {
               await logout();
@@ -64,7 +65,7 @@ export function ProtectRole({
   const { user } = useAuth();
 
   if (user?.role !== role) {
-    return <Navigate to={"/"} replace />;
+    return <Navigate to={"/no-role"} replace />;
   }
   return <Outlet />;
 }
