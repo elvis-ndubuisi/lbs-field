@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
+import useSWR from "swr";
+import fetcher from "../helpers/fetcher";
+import { History } from "../helpers/types";
+import BorrowHistory from "../components/borrow-history";
 
 export default function LiberianIndex() {
-  //   const { data, isLoading } = useSWR("/books", fetcher, {
-  //     revalidateOnFocus: false,
-  //   });
+  const { data, isLoading } = useSWR("/books/borrow/history", fetcher, {
+    revalidateOnFocus: false,
+  });
+
   return (
     <section style={{ width: "100%" }}>
       <div
@@ -17,9 +22,9 @@ export default function LiberianIndex() {
         <Link to={"/books"}>View books</Link>
         <Link to={"/liberian/genre"}>Add Genre</Link>
       </div>
-      <h2>Requests</h2>
-      {/* {isLoading && <h3>Loiading.....</h3>} */}
-      {/* <section
+      <h2>Requests & Histories</h2>
+      {isLoading && <h3>Loiading history data.....</h3>}
+      <section
         style={{
           marginTop: 12,
           display: "flex",
@@ -29,8 +34,10 @@ export default function LiberianIndex() {
         }}
       >
         {!isLoading &&
-          data?.map((item: Book) => <BookCard key={item.id} item={item} />)}
-      </section> */}
+          data?.map((item: History) => (
+            <BorrowHistory key={item.id} {...item} />
+          ))}
+      </section>
     </section>
   );
 }

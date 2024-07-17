@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import useSWR from "swr";
 import fetcher from "../helpers/fetcher";
 import BookCard from "../components/book-card";
-import type { Book } from "../helpers/types";
+import type { Book, History } from "../helpers/types";
+import BorrowHistory from "../components/borrow-history";
 
 export default function MemberIndex() {
   const { data, isLoading } = useSWR("/books", fetcher, {
@@ -14,7 +15,15 @@ export default function MemberIndex() {
     fetcher,
     {
       revalidateOnFocus: false,
-    }
+    },
+  );
+
+  const { data: history, isLoading: isLoadngHistory } = useSWR(
+    "/books/borrow/history",
+    fetcher,
+    {
+      revalidateOnFocus: false,
+    },
   );
 
   return (
@@ -43,9 +52,7 @@ export default function MemberIndex() {
             alignItems: "start",
           }}
         >
-          {data?.map((book: Book) => (
-            <BookCard key={book.id} item={book} />
-          ))}
+          {data?.map((book: Book) => <BookCard key={book.id} item={book} />)}
         </section>
       )}
 
@@ -64,8 +71,33 @@ export default function MemberIndex() {
             alignItems: "start",
           }}
         >
-          {borrowed?.map((book: Book) => (
-            <BookCard key={book.id} item={book} />
+          {borrowed?.map((book: { BookBorrowed: Book; approved: boolean }) => (
+            <BookCard
+              key={book.BookBorrowed.id}
+              item={book.BookBorrowed}
+              approved={book.approved}
+            />
+          ))}
+        </section>
+      )}
+
+      <hr />
+      <h2 id="borrowed">Borrowed History</h2>
+      {isLoadngHistory && <h3>Loiading.....</h3>}
+      {history?.length < 1 && <h3>No book history yet</h3>}
+
+      {!isLoadingBorrowed && (
+        <section
+          style={{
+            marginTop: 12,
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 12,
+            alignItems: "start",
+          }}
+        >
+          {history?.map((history: History) => (
+            <BorrowHistory key={history.id} {...history} />
           ))}
         </section>
       )}

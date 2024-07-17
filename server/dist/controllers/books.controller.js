@@ -169,8 +169,58 @@ function getBorrowed(req, res) {
         try {
             const borrowed = yield prisma_1.default.borrowHistory.findMany({
                 where: { borrowedBy: user.id, approved: true },
+                select: { BookBorrowed: true, approved: true },
             });
             return res.json(borrowed);
+        }
+        catch (error) {
+            return res
+                .status(500)
+                .json({ message: "Unable to process request.", name: "", data: {} });
+        }
+    });
+}
+function listHistory(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a;
+        const user = (_a = res.locals) === null || _a === void 0 ? void 0 : _a.user;
+        try {
+            let history;
+            if (user.role === "member") {
+                history = yield prisma_1.default.borrowHistory.findMany({
+                    where: { borrowedBy: user.id, approved: false },
+                    select: { id: true, BookBorrowed: true, approved: true },
+                });
+            }
+            else {
+                history = yield prisma_1.default.borrowHistory.findMany({
+                    include: {
+                        BorrowedBy: { select: { name: true } },
+                        BookBorrowed: { select: { title: true, isbn: true } },
+                    },
+                });
+            }
+            return res.json(history);
+        }
+        catch (error) {
+            return res
+                .status(500)
+                .json({ message: "Unable to process request.", name: "", data: {} });
+        }
+    });
+}
+function approveHistory(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a;
+        const user = (_a = res.locals) === null || _a === void 0 ? void 0 : _a.user;
+        const params = req.params;
+        // TODO: Liberian should also be able to reject request
+        try {
+            yield prisma_1.default.borrowHistory.update({
+                where: { id: params.id },
+                data: { approved: true },
+            });
+            return res.sendStatus(201);
         }
         catch (error) {
             return res
@@ -210,4 +260,6 @@ exports.default = {
     getOne,
     getBorrowed,
     borrow,
+    listHistory,
+    approveHistory,
 };

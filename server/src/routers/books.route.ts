@@ -12,7 +12,7 @@ booksRouter.post(
   "/",
   requestValidator(addBookSchema),
   roleValidator(["administrator", "liberian"]),
-  booksController.add
+  booksController.add,
 );
 
 booksRouter.use("/genre", roleValidator(["administrator", "liberian"]));
@@ -25,26 +25,37 @@ booksRouter.use("/borrow", deserializeUser, authValidator);
 booksRouter.get(
   "/borrow",
   roleValidator("member"),
-  booksController.getBorrowed
+  booksController.getBorrowed,
 );
 booksRouter.post(
   "/borrow/:id",
   requestValidator(bookSchema),
   roleValidator("member"),
-  booksController.borrow
+  booksController.borrow,
+);
+booksRouter.get(
+  "/borrow/history",
+  roleValidator(["liberian", "member"]),
+  booksController.listHistory,
+);
+booksRouter.patch(
+  "/borrow/history/:id",
+  requestValidator(bookSchema),
+  roleValidator("liberian"),
+  booksController.approveHistory,
 );
 
 booksRouter.get("/:id", requestValidator(bookSchema), booksController.getOne);
 booksRouter.put(
   "/:id",
   requestValidator(addBookSchema),
-  booksController.update
+  booksController.update,
 );
 booksRouter.delete(
   "/:id",
   requestValidator(bookSchema),
   roleValidator(["administrator", "liberian"]),
-  booksController.remove
+  booksController.remove,
 );
 
 export default booksRouter;

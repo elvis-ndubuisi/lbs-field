@@ -137,11 +137,57 @@ async function borrow(req: Request, res: Response) {
 
 async function getBorrowed(req: Request, res: Response) {
   const user = res.locals?.user as SignedUser;
+
   try {
     const borrowed = await prisma.borrowHistory.findMany({
       where: { borrowedBy: user.id, approved: true },
+      select: { BookBorrowed: true, approved: true },
     });
     return res.json(borrowed);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Unable to process request.", name: "", data: {} });
+  }
+}
+
+async function listHistory(req: Request, res: Response) {
+  const user = res.locals?.user as SignedUser;
+  try {
+    let history;
+    if (user.role === "member") {
+      history = await prisma.borrowHistory.findMany({
+        where: { borrowedBy: user.id, approved: false },
+        select: { id: true, BookBorrowed: true, approved: true },
+      });
+    } else {
+      history = await prisma.borrowHistory.findMany({
+        include: {
+          BorrowedBy: { select: { name: true } },
+          BookBorrowed: { select: { title: true, isbn: true } },
+        },
+      });
+    }
+    return res.json(history);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Unable to process request.", name: "", data: {} });
+  }
+}
+
+async function approveHistory(req: Request, res: Response) {
+  const user = res.locals?.user as SignedUser;
+  const params = req.params as BookSchema;
+
+  // TODO: Liberian should also be able to reject request
+
+  try {
+    await prisma.borrowHistory.update({
+      where: { id: params.id },
+      data: { approved: true },
+    });
+    return res.sendStatus(201);
   } catch (error) {
     return res
       .status(500)
@@ -178,4 +224,6 @@ export default {
   getOne,
   getBorrowed,
   borrow,
+  listHistory,
+  approveHistory,
 };

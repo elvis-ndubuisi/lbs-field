@@ -14,3 +14,14 @@ export type Book = {
   publicationDate: string;
   copies: number;
 };
+
+export type History = {
+  id: string;
+  lastModified: Date;
+  createdAt: Date;
+  borrowedBy: string;
+  approved: boolean;
+  bookBorrowed: string;
+  BorrowedBy?: { name: string };
+  BookBorrowed?: { title: string; isbn: true };
+};

@@ -5,7 +5,13 @@ import http from "../helpers/http";
 import { mutate } from "swr";
 import { Link } from "react-router-dom";
 
-export default function BookCard({ item }: { item: Book }) {
+export default function BookCard({
+  item,
+  approved,
+}: {
+  item: Book;
+  approved?: boolean;
+}) {
   const { user } = useAuth();
   const [processing, setProcessing] = React.useState(false);
   const [message, setMessage] = React.useState("");
@@ -79,7 +85,7 @@ export default function BookCard({ item }: { item: Book }) {
             </button>
           </>
         )}
-        {user?.role === "member" && (
+        {user?.role === "member" && !approved && (
           <button onClick={() => handleBorrow()} disabled={processing}>
             {processing ? "borro borro" : "borrow"}
           </button>
